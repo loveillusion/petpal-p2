@@ -2,7 +2,7 @@ from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from .models import Shelter, Pet, Application
 from .serializers import PetSerializer, ApplicationSerializer
-from ..accounts.serializers import ShelterSerializer
+from accounts.serializers import ShelterSerializer
 from rest_framework.response import Response
 
 

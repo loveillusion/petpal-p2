@@ -1,6 +1,6 @@
 from rest_framework import generics, filters
-from ..shelter.models import Pet
-from ..shelter.serializers import PetSerializer
+from shelter.models import Pet
+from shelter.serializers import PetSerializer
 
 
 class PetSearchView(generics.ListAPIView):
