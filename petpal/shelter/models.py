@@ -1,5 +1,5 @@
 from django.db import models
-from ..accounts.models import Shelter, User
+from accounts.models import Shelter, User
 
 
 class Pet(models.Model):
