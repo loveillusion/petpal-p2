@@ -19,5 +19,5 @@ class Pet(models.Model):
 class Application(models.Model):
     pet = models.ForeignKey(Pet, on_delete=models.CASCADE)
     applicant = models.ForeignKey(User, on_delete=models.CASCADE)
-    status = models.CharField(max_length=100)
+    app_status = models.CharField(max_length=100)
     # Add more fields as needed
