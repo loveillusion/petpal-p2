@@ -46,3 +46,15 @@ class PetDetailView(generics.RetrieveUpdateDestroyAPIView):
     lookup_url_kwarg = 'pet_id'
 
 # Similarly, implement views for Update Pet and Adopt Pet
+
+
+class UpdatePetView(generics.UpdateAPIView):
+    queryset = Pet.objects.all()
+    serializer_class = PetSerializer
+    permission_classes = [IsAuthenticated]
+    lookup_url_kwarg = 'pet_id'
+
+    def perform_update(self, serializer):
+        shelter_id = self.kwargs.get('shelter_id')
+        shelter = Shelter.objects.get(id=shelter_id)
+        serializer.save(shelter=shelter)
