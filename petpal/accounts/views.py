@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate
+from django.shortcuts import get_object_or_404
 from rest_framework import generics, status, permissions
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -6,6 +7,7 @@ from .models import User, Seeker, Shelter
 from .serializers import UserSerializer, SeekerSerializer, ShelterSerializer
 from .serializers import UserLoginSerializer, ShelterUpdateSerializer, SeekerUpdateSerializer
 from django.core.exceptions import ValidationError
+from .permissions import IsShelterUser, IsSeekerUser
 
 
 # =================SEEKER VIEWS=================
@@ -106,3 +108,33 @@ class ShelterEditProfileView(generics.UpdateAPIView):
 
     def get_object(self):
         return Shelter.objects.get(user=self.request.user)
+
+# delete views
+
+class SeekerDeleteView(generics.DestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated, IsSeekerUser]
+    serializer_class = SeekerSerializer
+
+    def get_object(self):
+        return get_object_or_404(Seeker, user=self.request.user)
+
+    def perform_destroy(self, instance):
+        user = instance.user
+        instance.delete()
+        user.delete()
+        return Response({"detail": "Seeker account deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+
+
+# Shelter Delete View
+class ShelterDeleteView(generics.DestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated, IsShelterUser]
+    serializer_class = ShelterSerializer
+
+    def get_object(self):
+        return get_object_or_404(Shelter, user=self.request.user)
+
+    def perform_destroy(self, instance):
+        user = instance.user
+        instance.delete()
+        user.delete()
+        return Response({"detail": "Shelter account deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
