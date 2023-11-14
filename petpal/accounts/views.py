@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User, Seeker, Shelter
 from .serializers import UserSerializer, SeekerSerializer, ShelterSerializer
-from .serializers import UserLoginSerializer, EditProfileSerializer
+from .serializers import UserLoginSerializer, ShelterUpdateSerializer, SeekerUpdateSerializer
 from django.core.exceptions import ValidationError
 
 
@@ -52,15 +52,7 @@ class SeekerProfileView(generics.RetrieveAPIView):
 
 class SeekerEditProfileView(generics.UpdateAPIView):
     permission_classes = [permissions.IsAuthenticated]
-    serializer_class = EditProfileSerializer
-
-    def get_object(self):
-        return self.request.user.seeker
-
-
-class SeekerUploadProfilePictureView(generics.UpdateAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    serializer_class = SeekerSerializer
+    serializer_class = SeekerUpdateSerializer
 
     def get_object(self):
         return Seeker.objects.get(user=self.request.user)
@@ -110,15 +102,7 @@ class ShelterProfileView(generics.RetrieveAPIView):
 
 class ShelterEditProfileView(generics.UpdateAPIView):
     permission_classes = [permissions.IsAuthenticated]
-    serializer_class = EditProfileSerializer
-
-    def get_object(self):
-        return self.request.user.shelter
-
-
-class ShelterUploadProfilePictureView(generics.UpdateAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    serializer_class = ShelterSerializer
+    serializer_class = ShelterUpdateSerializer
 
     def get_object(self):
         return Shelter.objects.get(user=self.request.user)
