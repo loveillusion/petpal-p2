@@ -9,7 +9,19 @@ class ChatSerializer(serializers.ModelSerializer):
         fields = ['application', 'message', 'sender', 'timestamp']
 
 
-class ApplicationStatusSerializer(serializers.ModelSerializer):
+class ChatCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Chat
+        fields = ['message']
+
+
+class ApplicationDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Application
-        fields = ['status']
+        fields = ['pet', 'applicant', 'app_status', 'app_message']
+
+
+class ApplicationUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Application
+        fields = ['app_status']
