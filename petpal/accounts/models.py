@@ -9,8 +9,8 @@ class User(AbstractUser):
 
 class Seeker(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    first_name = models.CharField(max_length=200)
-    last_name = models.CharField(max_length=200)
+    first_name = models.CharField(max_length=200, blank=True)
+    last_name = models.CharField(max_length=200, blank=True)
     contact_info = models.CharField(max_length=200, blank=True)
     location = models.CharField(max_length=200, blank=True)
     preferences = models.TextField(blank=True)
@@ -22,7 +22,7 @@ class Seeker(models.Model):
 
 class Shelter(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=200, blank=True)
     contact_info = models.CharField(max_length=200, blank=True)
     location = models.CharField(max_length=200, blank=True)
     mission_statement = models.TextField(blank=True)

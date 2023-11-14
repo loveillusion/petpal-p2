@@ -5,7 +5,7 @@ from .models import Seeker, Shelter, User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'password', 'email', 'first_name', 'last_name', 'is_seeker', 'is_shelter']
+        fields = ['id', 'username', 'password', 'email']
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
@@ -21,6 +21,12 @@ class SeekerSerializer(serializers.ModelSerializer):
         fields = ['user', 'first_name', 'last_name', 'contact_info', 'location', 'preferences', 'profile_picture']
 
 
+class SeekerUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Seeker
+        fields = ['first_name', 'last_name', 'contact_info', 'location', 'preferences', 'profile_picture']
+
+
 class ShelterSerializer(serializers.ModelSerializer):
     user = UserSerializer()
 
@@ -29,13 +35,12 @@ class ShelterSerializer(serializers.ModelSerializer):
         fields = ['user', 'name', 'contact_info', 'location', 'mission_statement', 'profile_picture']
 
 
+class ShelterUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Shelter
+        fields = ['name', 'contact_info', 'location', 'mission_statement', 'profile_picture']
+
+
 class UserLoginSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField(write_only=True)
-
-
-class EditProfileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['first_name', 'last_name', 'email', 'password']
-        extra_kwargs = {'password': {'write_only': True}}
