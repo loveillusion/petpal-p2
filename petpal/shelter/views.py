@@ -4,16 +4,17 @@ from .models import Shelter, Pet, Application
 from .serializers import PetSerializer, ApplicationSerializer
 from accounts.serializers import ShelterSerializer
 from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
 
 
-class ShelterDetailView(generics.RetrieveUpdateAPIView):
+class ShelterDetailView(generics.RetrieveAPIView):
     queryset = Shelter.objects.all()
     serializer_class = ShelterSerializer
     permission_classes = [IsAuthenticated]
     lookup_url_kwarg = 'shelter_id'
 
 
-class ShelterListingsView(generics.ListCreateAPIView):
+class ShelterListingsView(generics.ListAPIView):
     queryset = Pet.objects.all()
     serializer_class = PetSerializer
     permission_classes = [IsAuthenticated]
@@ -39,17 +40,14 @@ class CreatePetView(generics.CreateAPIView):
         serializer.save(shelter=shelter)
 
 
-class PetDetailView(generics.RetrieveUpdateDestroyAPIView):
+class PetDetailView(generics.RetrieveAPIView):
     queryset = Pet.objects.all()
     serializer_class = PetSerializer
     permission_classes = [IsAuthenticated]
     lookup_url_kwarg = 'pet_id'
 
-# Similarly, implement views for Update Pet and Adopt Pet
-
 
 class UpdatePetView(generics.UpdateAPIView):
-    queryset = Pet.objects.all()
     serializer_class = PetSerializer
     permission_classes = [IsAuthenticated]
     lookup_url_kwarg = 'pet_id'
@@ -59,6 +57,10 @@ class UpdatePetView(generics.UpdateAPIView):
         shelter = Shelter.objects.get(id=shelter_id)
         serializer.save(shelter=shelter)
 
+    def get_object(self):
+        pet_id = self.kwargs.get('pet_id')
+        return get_object_or_404(Pet, id=pet_id)
+
 
 class AdoptPetView(generics.CreateAPIView):
     serializer_class = ApplicationSerializer
@@ -66,7 +68,7 @@ class AdoptPetView(generics.CreateAPIView):
 
     def post(self, request, *args, **kwargs):
         pet_id = self.kwargs.get('pet_id')
-        pet = Pet.objects.get(id=pet_id)
+        pet = get_object_or_404(Pet, id=pet_id)
 
         # Check if pet is already adopted
         if pet.is_adopted:
@@ -77,10 +79,7 @@ class AdoptPetView(generics.CreateAPIView):
         applicant = self.request.user
         app_status = 'Pending'
 
-        serializer.save(pet=pet, applicant=applicant, app_status=app_status)
-
-        # Update pet as adopted
-        pet.is_adopted = True
+        pet = serializer.save(pet=pet, applicant=applicant, app_status=app_status)
         pet.save()
 
         return Response({'detail': 'Adoption application submitted successfully.'}, status=status.HTTP_201_CREATED)
