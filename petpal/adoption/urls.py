@@ -1,10 +1,11 @@
 from django.urls import path
-from .views import ApplicationDetailView, ChatView, ApplicationStatusUpdateView
+from .views import ApplicationDetailView, ChatView, ApplicationStatusUpdateView, ChatCreateView
 
 
 appname = 'application'
 urlpatterns = [
     path('<int:application_id>/detail/', ApplicationDetailView.as_view(), name='application_detail'),
-    path('<int:application_id>/', ChatView.as_view(), name='application_chat'),
+    path('<int:application_id>/chats/', ChatView.as_view(), name='application_chat'),
+    path('<int:application_id>/message/', ChatCreateView.as_view(), name='application_send'),
     path('<int:application_id>/status/', ApplicationStatusUpdateView.as_view(), name='application_status'),
 ]
