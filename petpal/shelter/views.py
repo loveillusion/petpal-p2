@@ -5,6 +5,7 @@ from .serializers import PetSerializer, ApplicationSerializer
 from accounts.serializers import ShelterSerializer
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
+from .permissions import IsShelterUser, IsSeekerUser
 
 
 class ShelterDetailView(generics.RetrieveAPIView):
@@ -32,7 +33,7 @@ class ListAllSheltersView(generics.ListAPIView):
 
 class CreatePetView(generics.CreateAPIView):
     serializer_class = PetSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsShelterUser]
 
     def perform_create(self, serializer):
         shelter_id = self.kwargs.get('shelter_id')
@@ -49,7 +50,7 @@ class PetDetailView(generics.RetrieveAPIView):
 
 class UpdatePetView(generics.UpdateAPIView):
     serializer_class = PetSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsShelterUser]
     lookup_url_kwarg = 'pet_id'
 
     def perform_update(self, serializer):
@@ -64,7 +65,7 @@ class UpdatePetView(generics.UpdateAPIView):
 
 class AdoptPetView(generics.CreateAPIView):
     serializer_class = ApplicationSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsSeekerUser]
 
     def post(self, request, *args, **kwargs):
         pet_id = self.kwargs.get('pet_id')
