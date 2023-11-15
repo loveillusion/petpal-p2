@@ -33,4 +33,5 @@ urlpatterns = [
     path('shelter/', include('shelter.urls')),
     path('search/', include('search.urls')),
     path('reviews/', include('review.urls')),
+    path('notifications/', include('notification.urls')),
 ]
