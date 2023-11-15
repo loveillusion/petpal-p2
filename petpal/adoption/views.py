@@ -8,6 +8,7 @@ from .permissions import ShelterCanViewSeekerProfile, ShelterCanViewApplication
 from accounts.serializers import SeekerSerializer, UserSerializer
 from accounts.models import Seeker
 from rest_framework.response import Response
+from shelter.permissions import IsSeekerUser, IsShelterUser
 
 
 class ApplicationDetailView(generics.RetrieveAPIView):
@@ -38,14 +39,42 @@ class ChatCreateView(generics.CreateAPIView):
         serializer.save(application=application, sender=sender)
 
 
-class ApplicationStatusUpdateView(generics.UpdateAPIView):
+class ApplicationStatusShelterUpdateView(generics.UpdateAPIView):
     queryset = Application.objects.all()
     serializer_class = ApplicationUpdateSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsShelterUser]
     lookup_url_kwarg = 'application_id'
 
     def perform_update(self, serializer):
-        serializer.save()
+        instance = serializer.instance
+        new_status = serializer.validated_data.get('app_status')
+
+        if instance.app_status == 'Pending' and new_status in ['Accepted', 'Denied']:
+            serializer.save()
+        else:
+            response_data = {'error': 'Invalid status transition.'}
+            return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ApplicationStatusSeekerUpdateView(generics.UpdateAPIView):
+    queryset = Application.objects.all()
+    serializer_class = ApplicationUpdateSerializer
+    permission_classes = [permissions.IsAuthenticated, IsSeekerUser]
+    lookup_url_kwarg = 'application_id'
+
+    def perform_update(self, serializer):
+        instance = serializer.instance
+        new_status = serializer.validated_data.get('app_status')
+
+        if instance.app_status == 'Pending' and new_status in ['Withdrawn']:
+            serializer.save()
+
+        elif instance.app_status == 'Accepted' and new_status in ['Withdrawn']:
+            serializer.save()
+
+        else:
+            response_data = {'error': 'Invalid status transition.'}
+            return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ShelterViewSeekerProfile(generics.RetrieveAPIView):
@@ -78,7 +107,7 @@ class ApplicationListView(generics.ListAPIView):
         if sort_by == 'creation':
             queryset = queryset.order_by('created_at')
         elif sort_by == 'last_update':
-            queryset = queryset.order_by('last_updated_at')
+            queryset = queryset.order_by('-last_updated_at')
 
         return queryset
 
