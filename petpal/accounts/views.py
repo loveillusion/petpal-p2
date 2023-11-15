@@ -18,6 +18,10 @@ class SeekerRegisterView(generics.CreateAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        password = serializer.validated_data.get('password')
+        if len(password) < 8:
+            return Response({'error': 'Password must be at least 8 characters long.'},
+                            status=status.HTTP_400_BAD_REQUEST)
         user = serializer.save()
         user.is_seeker = True
         user.save()
@@ -68,6 +72,10 @@ class ShelterRegisterView(generics.CreateAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        password = serializer.validated_data.get('password')
+        if len(password) < 8:
+            return Response({'error': 'Password must be at least 8 characters long.'},
+                            status=status.HTTP_400_BAD_REQUEST)
         user = serializer.save()
         user.is_shelter = True
         user.save()
