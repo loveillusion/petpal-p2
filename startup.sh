@@ -31,7 +31,7 @@ pip install djangorestframework
 pip install djangorestframework-simplejwt
 
 # Navigate to the directory where manage.py is located
-cd /home/ubuntu/Documents/petpal
+cd /home/ubuntu/PycharmProjects/Project-Phase-2/petpal-p2/petpal
 
 # Migrations
 ./manage.py makemigrations
