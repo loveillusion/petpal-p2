@@ -1,8 +1,10 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, permissions, status
+from rest_framework.pagination import PageNumberPagination
+
 from .models import Chat, Application
 from .serializers import ChatSerializer, ApplicationDetailSerializer, ApplicationUpdateSerializer, ChatCreateSerializer
-from .permissions import ShelterCanViewSeekerProfile
+from .permissions import ShelterCanViewSeekerProfile, ShelterCanViewApplication
 from accounts.serializers import SeekerSerializer, UserSerializer
 from accounts.models import Seeker
 from rest_framework.response import Response
@@ -57,3 +59,26 @@ class ShelterViewSeekerProfile(generics.RetrieveAPIView):
             applicant = application.applicant
             serializer = self.get_serializer(applicant)
             return Response(serializer.data)
+
+
+class ApplicationListView(generics.ListAPIView):
+    serializer_class = ApplicationDetailSerializer
+    permission_classes = [permissions.IsAuthenticated, ShelterCanViewApplication]
+
+    def get_queryset(self):
+        shelter_id = self.kwargs.get('shelter_id')
+        status_filter = self.request.query_params.get('status', None)
+        sort_by = self.request.query_params.get('sort_by', None)
+
+        queryset = Application.objects.filter(pet__shelter__id=shelter_id)
+
+        if status_filter:
+            queryset = queryset.filter(app_status=status_filter)
+
+        if sort_by == 'creation':
+            queryset = queryset.order_by('created_at')
+        elif sort_by == 'last_update':
+            queryset = queryset.order_by('last_updated_at')
+
+        return queryset
+

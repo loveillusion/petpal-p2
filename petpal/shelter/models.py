@@ -1,5 +1,6 @@
 from django.db import models
 from accounts.models import Shelter, User
+from django.utils import timezone
 
 
 class Pet(models.Model):
@@ -21,3 +22,5 @@ class Application(models.Model):
     applicant = models.ForeignKey(User, on_delete=models.CASCADE)
     app_status = models.CharField(max_length=100)
     app_message = models.TextField(blank=True)
+    created_at = models.DateTimeField(default=timezone.now, editable=False)
+    last_updated_at = models.DateTimeField(auto_now=True)
