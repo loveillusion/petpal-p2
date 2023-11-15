@@ -54,6 +54,9 @@ def update_notification(request, notification_id):
     except Notification.DoesNotExist:
         return Response({'error': 'Notification not found'}, status=404)
 
+    if notification.user != request.user:
+        return Response({'error': 'Permission denied'}, status=403)
+
     # Mark the notification as read
     notification.read = True
     notification.save()
@@ -93,6 +96,9 @@ def get_notification(request, notification_id):
         notification = Notification.objects.get(pk=notification_id)
         serialized_notification = NotificationSerializer(notification).data
 
+        if notification.user != request.user:
+            return Response({'error': 'Permission denied'}, status=403)
+
         if notification.content_type.model == 'application':
             link = f"/application/{notification.object_id}/detail/"
             serialized_notification['link'] = link
@@ -112,6 +118,9 @@ def get_notification(request, notification_id):
 def delete_notification(request, notification_id):
     try:
         notification = Notification.objects.get(pk=notification_id)
+
+        if notification.user != request.user:
+            return Response({'error': 'Permission denied'}, status=403)
     except Notification.DoesNotExist:
         return Response({'error': 'Notification not found'}, status=404)
 
