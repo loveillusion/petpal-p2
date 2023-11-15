@@ -43,6 +43,21 @@ class CreatePetView(generics.CreateAPIView):
         serializer.save(shelter=shelter)
 
 
+class DeletePetView(generics.DestroyAPIView):
+    serializer_class = PetSerializer
+    permission_classes = [IsAuthenticated, IsShelterUser]
+    lookup_url_kwarg = 'pet_id'
+
+    def get_object(self):
+        pet_id = self.kwargs.get('pet_id')
+        return get_object_or_404(Pet, id=pet_id)
+
+    def destroy(self, request, *args, **kwargs):
+        pet = self.get_object()
+        pet.delete()
+        return Response({'detail': 'Pet deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
+
+
 class PetDetailView(generics.RetrieveAPIView):
     queryset = Pet.objects.all()
     serializer_class = PetSerializer
