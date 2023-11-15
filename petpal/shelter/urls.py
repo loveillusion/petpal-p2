@@ -6,7 +6,8 @@ from .views import (
     CreatePetView,
     PetDetailView,
     UpdatePetView,
-    AdoptPetView
+    AdoptPetView,
+    DeletePetView
 )
 
 appname = 'shelter'
@@ -19,4 +20,5 @@ urlpatterns = [
     path('<int:shelter_id>/pet/<int:pet_id>/detail/', PetDetailView.as_view(), name='pet_detail'),
     path('<int:shelter_id>/pet/<int:pet_id>/management/', UpdatePetView.as_view(), name='update_pet'),
     path('<int:shelter_id>/pet/<int:pet_id>/adoption/', AdoptPetView.as_view(), name='adopt_pet'),
+    path('<int:shelter_id>/pet/<int:pet_id>/deletion/', DeletePetView.as_view(), name='delete_pet')
 ]
