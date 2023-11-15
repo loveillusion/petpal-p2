@@ -6,11 +6,11 @@ from django.utils import timezone
 class Pet(models.Model):
     shelter = models.ForeignKey(Shelter, on_delete=models.CASCADE)
     name = models.CharField(max_length=200)
-    gender = models.CharField(max_length=200, blank=True)
-    breed = models.CharField(max_length=200, blank=True)
-    age = models.PositiveIntegerField(null=True)
-    size = models.CharField(max_length=200, blank=True)
-    description = models.TextField(blank=True)
+    gender = models.CharField(max_length=200)
+    breed = models.CharField(max_length=200)
+    age = models.PositiveIntegerField(max_length=10)
+    size = models.CharField(max_length=200)
+    description = models.TextField(max_length=200)
     is_adopted = models.BooleanField(default=False)
 
     def __str__(self):
