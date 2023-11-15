@@ -29,7 +29,9 @@ pip install djangorestframework
 
 # Install Simple JWT for token-based authentication
 pip install djangorestframework-simplejwt
-# pip install some-other-package if needed
+
+# Navigate to the directory where manage.py is located
+cd /home/ubuntu/Documents/petpal
 
 # Migrations
 ./manage.py makemigrations
