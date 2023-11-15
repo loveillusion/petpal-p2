@@ -6,6 +6,7 @@ from accounts.serializers import ShelterSerializer
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from .permissions import IsShelterUser, IsSeekerUser
+from .pagination import CustomPagination
 
 
 class ShelterDetailView(generics.RetrieveAPIView):
@@ -19,6 +20,7 @@ class ShelterListingsView(generics.ListAPIView):
     queryset = Pet.objects.all()
     serializer_class = PetSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = CustomPagination
 
     def get_queryset(self):
         shelter_id = self.kwargs.get('shelter_id')
