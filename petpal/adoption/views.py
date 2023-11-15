@@ -1,6 +1,5 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, permissions, status
-from rest_framework.pagination import PageNumberPagination
 
 from .models import Chat, Application
 from .serializers import ChatSerializer, ApplicationDetailSerializer, ApplicationUpdateSerializer, ChatCreateSerializer
@@ -9,6 +8,7 @@ from accounts.serializers import SeekerSerializer, UserSerializer
 from accounts.models import Seeker
 from rest_framework.response import Response
 from shelter.permissions import IsSeekerUser, IsShelterUser
+from .pagination import CustomPagination
 
 
 class ApplicationDetailView(generics.RetrieveAPIView):
@@ -52,6 +52,7 @@ class ApplicationStatusShelterUpdateView(generics.UpdateAPIView):
         if instance.app_status == 'Pending' and new_status == 'Accepted':
             instance.pet.is_adopted = True
             instance.pet.save()
+            serializer.save()
 
         elif instance.app_status == 'Pending' and new_status == 'Denied':
 
@@ -75,6 +76,8 @@ class ApplicationStatusSeekerUpdateView(generics.UpdateAPIView):
             serializer.save()
 
         elif instance.app_status == 'Accepted' and new_status in ['Withdrawn']:
+            instance.pet.is_adopted = False
+            instance.pet.save()
             serializer.save()
 
         else:
@@ -98,6 +101,7 @@ class ShelterViewSeekerProfile(generics.RetrieveAPIView):
 class ApplicationListView(generics.ListAPIView):
     serializer_class = ApplicationDetailSerializer
     permission_classes = [permissions.IsAuthenticated, ShelterCanViewApplication]
+    pagination_class = CustomPagination
 
     def get_queryset(self):
         shelter_id = self.kwargs.get('shelter_id')
