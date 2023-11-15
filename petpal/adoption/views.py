@@ -1,6 +1,10 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import generics, permissions, status
 from .models import Chat, Application
 from .serializers import ChatSerializer, ApplicationDetailSerializer, ApplicationUpdateSerializer, ChatCreateSerializer
+from .permissions import ShelterCanViewSeekerProfile
+from accounts.serializers import SeekerSerializer, UserSerializer
+from accounts.models import Seeker
 from rest_framework.response import Response
 
 
@@ -40,3 +44,16 @@ class ApplicationStatusUpdateView(generics.UpdateAPIView):
 
     def perform_update(self, serializer):
         serializer.save()
+
+
+class ShelterViewSeekerProfile(generics.RetrieveAPIView):
+
+        serializer_class = UserSerializer
+        permission_classes = [permissions.IsAuthenticated, ShelterCanViewSeekerProfile]
+
+        def retrieve(self, request, *args, **kwargs):
+            application_id = self.kwargs.get('application_id')
+            application = get_object_or_404(Application, id=application_id)
+            applicant = application.applicant
+            serializer = self.get_serializer(applicant)
+            return Response(serializer.data)
