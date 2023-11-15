@@ -32,4 +32,5 @@ urlpatterns = [
     path('application/', include('adoption.urls')),
     path('shelter/', include('shelter.urls')),
     path('search/', include('search.urls')),
+    path('reviews/', include('review.urls')),
 ]
