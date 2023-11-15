@@ -2,7 +2,7 @@ from django.utils import timezone
 from rest_framework.decorators import api_view
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
-from .serializers import NotificationCreateSerializer
+from .serializers import NotificationCreateSerializer, NotificationSerializer
 from .models import Notification
 from accounts.models import User
 from django.core import serializers
@@ -80,7 +80,7 @@ def list_notifications(request):
         paginator = PageNumberPagination()
         paginator.page_size = 10  # Number of notifications per page
         paginated_notifications = paginator.paginate_queryset(notifications, request)
-        serialized_notifications = serializers.serialize('json', paginated_notifications)
+        serialized_notifications = NotificationSerializer(paginated_notifications, many=True).data
 
         return paginator.get_paginated_response(serialized_notifications)
 
