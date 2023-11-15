@@ -5,7 +5,7 @@ from .models import Pet, Application
 class PetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pet
-        fields = ['name', 'gender', 'breed', 'age', 'size', 'description']
+        fields = ['name', 'gender', 'breed', 'age', 'size', 'description', 'is_adopted']
 
     def create(self, validated_data):
         pet = Pet.objects.create(**validated_data)

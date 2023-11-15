@@ -49,7 +49,13 @@ class ApplicationStatusShelterUpdateView(generics.UpdateAPIView):
         instance = serializer.instance
         new_status = serializer.validated_data.get('app_status')
 
-        if instance.app_status == 'Pending' and new_status in ['Accepted', 'Denied']:
+        if instance.app_status == 'Pending' and new_status == 'Accepted':
+            instance.pet.is_adopted = True
+            instance.pet.save()
+            serializer.save()
+
+        elif instance.app_status == 'Pending' and new_status == 'Denied':
+
             serializer.save()
         else:
             response_data = {'error': 'Invalid status transition.'}
@@ -70,6 +76,8 @@ class ApplicationStatusSeekerUpdateView(generics.UpdateAPIView):
             serializer.save()
 
         elif instance.app_status == 'Accepted' and new_status in ['Withdrawn']:
+            instance.pet.is_adopted = False
+            instance.pet.save()
             serializer.save()
 
         else:
