@@ -93,13 +93,13 @@ def get_notification(request, notification_id):
         notification = Notification.objects.get(pk=notification_id)
         serialized_notification = NotificationSerializer(notification).data
 
-        if serialized_notification['content_type'] == 'application':
+        if notification.content_type.model == 'application':
             link = f"/application/{notification.object_id}/detail/"
             serialized_notification['link'] = link
-        elif serialized_notification['content_type'] == 'chat':
+        elif notification.content_type.model == 'chat':
             link = f"/application/{notification.object_id}/chats/"
             serialized_notification['link'] = link
-        elif serialized_notification['content_type'] == 'review':
+        elif notification.content_type.model == 'review':
             link = f"/shelter/{notification.object_id}/"
             serialized_notification['link'] = link
 
