@@ -87,6 +87,27 @@ def list_notifications(request):
     return Response({'error': 'User is not authenticated'}, status=401)
 
 
+@api_view(['GET'])
+def get_notification(request, notification_id):
+    try:
+        notification = Notification.objects.get(pk=notification_id)
+        serialized_notification = NotificationSerializer(notification).data
+
+        if serialized_notification['content_type'] == 'application':
+            link = f"/application/{notification.object_id}/detail/"
+            serialized_notification['link'] = link
+        elif serialized_notification['content_type'] == 'chat':
+            link = f"/application/{notification.object_id}/chats/"
+            serialized_notification['link'] = link
+        elif serialized_notification['content_type'] == 'review':
+            link = f"/shelter/{notification.object_id}/"
+            serialized_notification['link'] = link
+
+        return Response(serialized_notification)
+    except Notification.DoesNotExist:
+        return Response({'error': 'Notification not found'}, status=404)
+
+
 @api_view(['DELETE'])
 def delete_notification(request, notification_id):
     try:
