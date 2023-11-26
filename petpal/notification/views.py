@@ -54,6 +54,9 @@ def update_notification(request, notification_id):
     except Notification.DoesNotExist:
         return Response({'error': 'Notification not found'}, status=404)
 
+    if notification.user != request.user:
+        return Response({'error': 'Permission denied'}, status=403)
+
     # Mark the notification as read
     notification.read = True
     notification.save()
@@ -87,10 +90,37 @@ def list_notifications(request):
     return Response({'error': 'User is not authenticated'}, status=401)
 
 
+@api_view(['GET'])
+def get_notification(request, notification_id):
+    try:
+        notification = Notification.objects.get(pk=notification_id)
+        serialized_notification = NotificationSerializer(notification).data
+
+        if notification.user != request.user:
+            return Response({'error': 'Permission denied'}, status=403)
+
+        if notification.content_type.model == 'application':
+            link = f"/application/{notification.object_id}/detail/"
+            serialized_notification['link'] = link
+        elif notification.content_type.model == 'chat':
+            link = f"/application/{notification.object_id}/chats/"
+            serialized_notification['link'] = link
+        elif notification.content_type.model == 'review':
+            link = f"/shelter/{notification.object_id}/"
+            serialized_notification['link'] = link
+
+        return Response(serialized_notification)
+    except Notification.DoesNotExist:
+        return Response({'error': 'Notification not found'}, status=404)
+
+
 @api_view(['DELETE'])
 def delete_notification(request, notification_id):
     try:
         notification = Notification.objects.get(pk=notification_id)
+
+        if notification.user != request.user:
+            return Response({'error': 'Permission denied'}, status=403)
     except Notification.DoesNotExist:
         return Response({'error': 'Notification not found'}, status=404)
 

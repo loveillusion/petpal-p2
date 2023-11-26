@@ -1,11 +1,13 @@
 from rest_framework import generics, filters
 from shelter.models import Pet
 from .serializers import PetSearchSerializer
+from .pagination import CustomPagination
 
 
 class PetSearchView(generics.ListAPIView):
     queryset = Pet.objects.all()
     serializer_class = PetSearchSerializer
+    pagination_class = CustomPagination
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['shelter__name', 'name', 'gender', 'breed', 'age', 'size', 'description', 'is_adopted']
     ordering_fields = ['name', 'age']
